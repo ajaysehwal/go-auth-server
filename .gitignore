@@ -1,0 +1,8 @@
+.env
+*.test
+*dylib
+*.out
+
+go.work
+
+go.work.sum
