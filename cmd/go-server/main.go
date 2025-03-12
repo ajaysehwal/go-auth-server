@@ -5,14 +5,13 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ajaysehwal/go-rest-server/internal/api"
 	"github.com/ajaysehwal/go-rest-server/internal/config"
 	"github.com/ajaysehwal/go-rest-server/internal/db"
-	"github.com/gorilla/mux"
 )
 
 
 func main(){
-   r:=mux.NewRouter()
    cfg:=config.LoadConfig()
    dbCfg:=db.Config{
 	ConnString: cfg.DBConn,
@@ -29,25 +28,11 @@ func main(){
    if err:=dbConn.Migrate("./internal/db/migrations");err!=nil{
 	log.Fatalf("Migration Failed : %v",err)
    }
-   
-   r.HandleFunc("/",homeHandler).Methods("GET")
-   r.HandleFunc("users/{id}",UserHandler).Methods("GET")
-   
-   
+   router:=api.SetupRouter(dbConn.DB)
+  
    log.Println("Server starting on : 8080")
-   if err := http.ListenAndServe(":8080",r); err !=nil{
+   if err := http.ListenAndServe(":8080",router); err !=nil{
 	log.Fatalf("server failed %s",err)
    }
 	
-}
-
-func homeHandler(w http.ResponseWriter,r *http.Request){
-	w.Write([]byte("Hello from go server"))
-}
-
-func UserHandler(w http.ResponseWriter, r *http.Request){
-	vars:=mux.Vars(r);
-	id:=vars["id"]
-	w.Write([]byte("User ID: "+id))
-   
 }
