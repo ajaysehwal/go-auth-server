@@ -3,7 +3,9 @@ package services
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
+
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -74,7 +76,9 @@ func (s *AuthService) Login(email, password string) (string, error) {
 			IssuedAt:  jwt.NewNumericDate(time.Now()), // Added for completeness
 		},
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims) // Changed ES256 to HS256
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	 // Changed ES256 to HS256
+	 fmt.Print(string(s.jwtSecret))
 	tokenString, err := token.SignedString(s.jwtSecret)        // Use s.jwtSecret instead of config.LoadConfig()
 	if err != nil {
 		return "", err

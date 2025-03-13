@@ -2,16 +2,16 @@ package middleware
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
 
 	"github.com/ajaysehwal/go-rest-server/internal/api/handlers"
+	"github.com/ajaysehwal/go-rest-server/internal/config"
 	"github.com/ajaysehwal/go-rest-server/internal/services"
 	"github.com/golang-jwt/jwt/v4"
 )
-
-var JWTSecret []byte
 
 func AuthMiddlware(next http.Handler) http.Handler{
 	return http.HandlerFunc(func(w http.ResponseWriter,r *http.Request){
@@ -23,10 +23,11 @@ func AuthMiddlware(next http.Handler) http.Handler{
 			return;
 
 		}
+		fmt.Print([]byte(config.LoadConfig().JWTSecret))
 		tokenStr:=strings.TrimPrefix(authHeader,"Bearer ")
 		claims:=&services.Claims{}
 	    token, err:=jwt.ParseWithClaims(tokenStr,claims,func(token *jwt.Token)(any, error){
-			return JWTSecret,nil
+			return []byte(config.LoadConfig().JWTSecret),nil
 		})
 		if err != nil || !token.Valid {
 			w.Header().Set("Content-Type", "application/json")
