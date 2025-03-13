@@ -15,7 +15,8 @@ func SetupRouter(db *sql.DB) http.Handler{
 	r:=mux.NewRouter()
 	authSvc:= services.NewAuthService(db,[]byte(config.LoadConfig().JWTSecret));
 	r.HandleFunc("/register",handlers.RegisterHandler(authSvc)).Methods("POST")
+	r.HandleFunc("/login",handlers.LoginHandler(authSvc)).Methods("POST");
     // protected:=r.PathPrefix("/api").Subrouter()
-
+    
 	return middleware.LoggingMiddleware(r)
 }
